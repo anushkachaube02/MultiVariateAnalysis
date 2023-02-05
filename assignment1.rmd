@@ -1,0 +1,31 @@
+---
+title: "Assignment 1"
+author: "Anushka Chaube"
+date: "2/5/2023"
+output: html_document
+---
+
+```{r}
+
+library(readr)
+Bumpus_sparrows <- read_csv("/Users/anushkachaube/Downloads/Bumpus_sparrows.csv")
+sparr <- Bumpus_sparrows
+sparr
+Survived = sparr[sparr[,1]=="S", c(1:6)]
+Survived
+NotSurvived = sparr[sparr[,1]=="NS", c(1:6)]
+NotSurvived
+
+Survived.num <- Survived[,-1]
+Survived.num
+colMeans(Survived.num)
+
+NotSurvived.num <- NotSurvived[,-1]
+colMeans(NotSurvived.num)
+
+cov(Survived.num)
+cov(NotSurvived.num)
+
+cor(Survived.num)
+cor(NotSurvived.num)
+```
