@@ -1,0 +1,59 @@
+---
+title: "Assignment 2"
+author: "Anushka Chaube"
+date: "2/12/2023"
+output:
+html_document: default
+word_document: default
+pdf_document: default
+---
+```{r}
+library(lattice)
+library(ggplot2)
+library(ggridges)
+library(ggvis)
+library(ggthemes)
+library(cowplot)
+library(gapminder)
+library(gganimate)
+library(dplyr)
+library(tidyverse)
+library(gridExtra)
+library(RColorBrewer)
+
+library(readr)
+sparrows <- read_csv("/Users/anushkachaube/Library/Containers/com.microsoft.Excel/Data/Downloads/Bumpus_sparrows.csv")
+str(sparrows)
+boxplot(sparrows[,2:6])
+
+#ggplot
+ggplot(sparrows, aes(x=Alar_extent,y=Total_length)) + facet_wrap(~Survivorship) + geom_point()
+ggplot(sparrows, aes(x=L_keel_sternum,y=L_beak_head)) + geom_point()
+ggplot(sparrows, aes(x=L_keel_sternum,y=L_humerous)) + geom_point()
+
+#box plot
+ggplot(sparrows, aes(x=Survivorship,y=L_keel_sternum)) + geom_boxplot()
+ggplot(sparrows, aes(x=Survivorship,y=L_humerous)) + geom_boxplot()
+
+#regression
+ggplot(sparrows, aes(x=Survivorship, y=L_beak_head)) + geom_point() + geom_smooth(method=lm)
+
+#hexbin
+ggplot(sparrows, aes(x=Total_length, y=Alar_extent)) + geom_hex() 
+ggplot(sparrows, aes(x=Total_length, y=L_beak_head)) + geom_hex() 
+
+#barchart
+ggplot(sparrows, aes(Survivorship))+ geom_bar(position="stack")
+
+#density plot
+ggplot(sparrows, aes(x=Total_length)) + geom_density() 
+ggplot(sparrows, aes(x=L_humerous)) + geom_density() 
+ggplot(sparrows, aes(x=L_keel_sternum)) + geom_density() 
+
+#violin plots
+ggplot(sparrows, aes(x=Survivorship, y=Total_length)) + geom_violin()
+ggplot(sparrows, aes(x=Survivorship, y=Alar_extent)) + geom_violin()
+ggplot(sparrows, aes(x=Survivorship, y=L_beak_head)) + geom_violin()
+```
+
+
