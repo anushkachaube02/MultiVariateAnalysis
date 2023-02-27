@@ -133,4 +133,22 @@ autoplot(winequality_pca,
          loadings = TRUE,
          labels = winequality$Type)
 
+#ANOVA
+summary(aov(alcohol ~ Type))
+summary(aov(pH ~ Type))
+summary(aov(sulphates ~ Type))
+summary(aov(density ~ Type))
+summary(aov(fixed_acidity ~ Type))
+summary(aov(chlorides ~ Type))
+summary(aov(quality ~ Type))
+
+
+# BoxM
+
+library(biotools)
+boxM(winequality[,2:6],Type)
+
+# MANOVA
+summary(manova(as.matrix(winequality[,-1])~ Type))
 ```
+
