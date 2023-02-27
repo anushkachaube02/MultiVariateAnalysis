@@ -1,0 +1,136 @@
+---
+title: "PCA"
+output: html_document
+date: "2023-02-15"
+---
+```{r}
+library(readr)
+winequality <- read_csv("/Users/anushkachaube/Library/Containers/com.microsoft.Excel/Data/Downloads/winequalityN.csv")
+str(winequality)
+attach(winequality)
+#Get the Correlations between the measurements
+cor(winequality[-1])
+# Using prcomp to compute the principal components (eigenvalues and eigenvectors). With scale=TRUE, variable means are set to zero, and variances set to one
+winequality_pca <- prcomp(winequality[,-1],scale=TRUE)
+winequality_pca
+summary(winequality_pca)
+(eigen_winequality <- winequality_pca$sdev^2)
+names(eigen_winequality) <- paste("PC",1:8,sep="")
+eigen_winequality
+sumlambdas <- sum(eigen_winequality)
+sumlambdas
+propvar <- eigen_winequality/sumlambdas
+propvar
+cumvar_winequality <- cumsum(propvar)
+cumvar_winequality
+matlambdas <- rbind(eigen_winequality,propvar,cumvar_winequality)
+rownames(matlambdas) <- c("Eigenvalues","Prop. variance","Cum. prop. variance")
+round(matlambdas,4)
+summary(winequality_pca)
+winequality_pca$rotation
+print(winequality_pca)
+winequality_pca$x
+winequa_pca <- cbind(data.frame(quality),winequality_pca$x)
+winequa_pca
+# Means of scores for all the PC's classified by Quality
+tabmeansPC <- aggregate(winequa_pca[,2:6],by=list(quality=winequality$quality),mean)
+tabmeansPC
+tabmeansPC <- tabmeansPC[rev(order(tabmeansPC$quality)),]
+tabmeansPC
+tabfmeans <- t(tabmeansPC[,-1])
+tabfmeans
+colnames(tabfmeans) <- t(as.vector(tabmeansPC[1]$quality))
+tabfmeans
+# Standard deviations of scores for all the PC's classified by type of wine
+tabsdsPC <- aggregate(winequa_pca[,2:6],by=list(quality=winequality$quality),sd)
+tabfsds <- t(tabsdsPC[,-1])
+colnames(tabfsds) <- t(as.vector(tabsdsPC[1]$quality))
+tabfsds
+t.test(PC1~winequality$Type,data=winequa_pca)
+t.test(PC2~winequality$Type,data=winequa_pca)
+t.test(PC3~winequality$Type,data=winequa_pca)
+t.test(PC4~winequality$Type,data=winequa_pca)
+t.test(PC5~winequality$Type,data=winequa_pca)
+t.test(PC6~winequality$Type,data=winequa_pca)
+t.test(PC7~winequality$Type,data=winequa_pca)
+t.test(PC8~winequality$Type,data=winequa_pca)
+## F ratio tests
+var.test(PC1~winequality$Type,data=winequa_pca)
+var.test(PC2~winequality$Type,data=winequa_pca)
+var.test(PC3~winequality$Type,data=winequa_pca)
+var.test(PC4~winequality$Type,data=winequa_pca)
+var.test(PC5~winequality$Type,data=winequa_pca)
+var.test(PC6~winequality$Type,data=winequa_pca)
+var.test(PC7~winequality$Type,data=winequa_pca)
+var.test(PC8~winequality$Type,data=winequa_pca)
+# Levene's tests (one-sided)
+library(car)
+(LTPC1 <- leveneTest(PC1~winequality$Type,data=winequa_pca))
+(p_PC1_1sided <- LTPC1[[3]][1]/2)
+(LTPC2 <- leveneTest(PC2~winequality$Type,data=winequa_pca))
+(p_PC2_1sided <- LTPC2[[3]][1]/2)
+(LTPC3 <- leveneTest(PC3~winequality$Type,data=winequa_pca))
+(p_PC3_1sided <- LTPC3[[3]][1]/2)
+(LTPC4 <- leveneTest(PC4~winequality$Type,data=winequa_pca))
+(p_PC4_1sided <- LTPC4[[3]][1]/2)
+(LTPC5 <- leveneTest(PC5~winequality$Type,data=winequa_pca))
+(p_PC5_1sided <- LTPC5[[3]][1]/2)
+(LTPC6 <- leveneTest(PC6~winequality$Type,data=winequa_pca))
+(p_PC6_1sided <- LTPC6[[3]][1]/2)
+(LTPC7 <- leveneTest(PC7~winequality$Type,data=winequa_pca))
+(p_PC7_1sided <- LTPC7[[3]][1]/2)
+(LTPC8 <- leveneTest(PC8~winequality$Type,data=winequa_pca))
+(p_PC8_1sided <- LTPC8[[3]][1]/2)
+# Plotting the scores for the first and second components
+plot(winequa_pca$PC1, winequa_pca$PC2,pch=ifelse(winequa_pca$Type == "red",1,5),xlab="PC1", ylab="PC2", main="Red Wine Quality")
+abline(h=0)
+abline(v=0)
+legend("bottomleft", legend=c("Red Wine","White Wine"), pch=c(1,5))
+plot(eigen_winequality, xlab = "Component number", ylab = "Component variance", type = "l", main = "Scree diagram")
+plot(log(eigen_winequality), xlab = "Component number",ylab = "log(Component variance)", type="l",main = "Log(eigenvalue) diagram")
+print(summary(winequality_pca))
+diag(cov(winequality_pca$x))
+xlim <- range(winequality_pca$x[,1])
+winequality_pca$x[,1]
+winequality_pca$x
+plot(winequality_pca$x,xlim=xlim,ylim=xlim)
+winequality_pca$rotation[,1]
+winequality_pca$rotation
+plot(winequality[,-1])
+winequality_pca$x
+plot(winequality_pca)
+# Better Ways to Visualize
+
+library(factoextra)
+library(FactoMineR)
+library(ggfortify)
+library(psych)
+library(corrplot)
+library(devtools)
+
+# Correlation
+pairs.panels(winequality[,-1],
+             gap = 0,
+             bg = c("red", "blue")[winequality$Type],
+             pch=21)
+
+pairs.panels(winequality_pca$x,
+             gap=0,
+             bg = c("red", "blue")[winequality$Type],
+             pch=21)
+
+
+fviz_eig(winequality_pca, addlabels = TRUE)
+fviz_pca_var(winequality_pca,col.var = "cos2",
+             gradient.cols = c("#FFCC00", "#CC9933", "#660033", "#330033"),
+             repel = TRUE)
+fviz_pca_ind(winequality_pca, col.ind = "cos2", 
+             gradient.cols = c("#FFCC00", "#CC9933", "#660033", "#330033"), 
+             repel = TRUE)
+biplot(winequality_pca)
+autoplot(winequality_pca,
+         data = winequality[,-1],
+         loadings = TRUE,
+         labels = winequality$Type)
+
+```
