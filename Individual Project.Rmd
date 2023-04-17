@@ -1,0 +1,82 @@
+---
+title: "Individual Project"
+author: "Anushka Chaube"
+date: "04/16/2023"
+output:
+html_document: default
+word_document: default
+pdf_document: default
+---
+  
+```{r}
+
+#Importing required libraries
+library(magrittr)
+library(factoextra)
+library(NbClust)
+library(ggplot2)
+library(tidyr)
+library(gridExtra)
+library(grid)
+library(factoextra)
+library(corrplot)
+library(ggcorrplot)
+library(psych)
+library(MASS)
+library(memisc)
+winequality <- read.csv("/Users/anushkachaube/Downloads/winequalityN.csv")
+str(winequality)
+head(winequality)
+#Removing and id and brand columns as they are not numerical and numerical can only be used for analysis
+winequality_data <- winequality[-1]
+head(winequality_data)
+
+dim(winequality_data)
+#The dataset contains 6463 observations and 8 variables
+
+#Data Preparation
+norm_data <- scale(winequality_data)
+head(norm_data)
+
+corr <- cor(norm_data, method = "pearson")
+ggcorrplot(corr)
+
+#PCA
+pca_data <- prcomp(norm_data)
+summary(pca_data)
+
+fviz_eig(pca_data, choice = "variance", addlabels = TRUE, barfill = "purple", linecolor = "black")
+
+pca_data$rotation[,1:6]
+
+eigenvalues <- summary(pca_data)$importance[2,]
+eigenvalues
+
+#Correlation Circle
+fviz_pca_var(pca_data, col.var = "black")
+
+#Quality of representation
+fviz_cos2(pca_data, choice = "var", axes = 1:6)
+fviz_pca_var(pca_data, col.var = "cos2",
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"), 
+             repel = TRUE # Avoid text overlapping
+)
+
+#Contributions of variables to PCs
+pca1<- fviz_contrib(pca_data, choice = "var", axes = 1, top = 6, title = "PCA1")
+pca2<- fviz_contrib(pca_data, choice = "var", axes = 2, top = 6, title = "PCA2")
+pca3<- fviz_contrib(pca_data, choice = "var", axes = 3, top = 6, title = "PCA3")
+pca4<- fviz_contrib(pca_data, choice = "var", axes = 4, top = 6, title = "PCA4")
+pca5<- fviz_contrib(pca_data, choice = "var", axes = 5, top = 6, title = "PCA5")
+grid.arrange(pca1, pca2, pca3, pca4, pca5,  ncol=2)
+
+
+
+fa.parallel(winequality_data)
+fit.pc <- principal(winequality_data, nfactors=4, rotate="varimax")
+fit.pc
+fa.plot(fit.pc)
+fa.diagram(fit.pc)
+
+
+```
